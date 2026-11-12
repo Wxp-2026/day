@@ -16,6 +16,9 @@
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <!-- ============================================ -->
 
+<!-- 字体 CDN 预连接 -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
 <!-- lunar-javascript：农历转换、节气、节日 -->
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@2.0.4/dist/lunar.min.js"></script>
 <style>
@@ -32,6 +35,10 @@
   --down:#4C8B7A;
   --festival:#C0554B;
   --term:#4C8B7A;
+
+  /* 全局正文字体（会被 JS 按字体方案覆盖） */
+  --font-base:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  /* 强调字体（标题、数字等，会被 JS 按字体方案覆盖） */
   --font-serif:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -42,7 +49,7 @@ body{
     radial-gradient(circle at 50% 0%, rgba(255,255,255,.20), transparent 55%),
     repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 2px, transparent 2px 4px);
   color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  font-family:var(--font-base);
   -webkit-font-smoothing:antialiased;
   overscroll-behavior-y:contain;
 }
@@ -93,6 +100,7 @@ input,textarea{font-family:inherit;}
   font-size:21px;font-weight:700;letter-spacing:3px;
 }
 .brand::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:7px;}
+.appbar-actions{display:flex;gap:8px;align-items:center;flex:none;}
 .icon-btn{
   width:38px;height:38px;border-radius:10px;
   background:#FFFDFA;border:1px solid var(--line);
@@ -100,6 +108,11 @@ input,textarea{font-family:inherit;}
   transition:.15s;
 }
 .icon-btn:active{background:#F4EFE3;color:var(--ink);}
+.font-btn{
+  font-family:var(--font-serif);
+  font-size:14px;font-weight:600;
+  letter-spacing:-0.5px;line-height:1;
+}
 .today-btn{
   font-family:var(--font-serif);
   font-size:15px;font-weight:600;color:var(--accent);
@@ -437,9 +450,43 @@ input,textarea{font-family:inherit;}
 }
 .modal-mask.show .modal-card{transform:none;opacity:1;}
 .modal-title{font-size:16px;font-weight:600;text-align:center;font-family:var(--font-serif);}
+.modal-desc{font-size:12px;color:var(--ink3);text-align:center;margin-top:8px;line-height:1.6;}
 .modal-actions{display:flex;gap:10px;margin-top:20px;}
 .modal-actions .btn{flex:1;text-align:center;}
 .btn.danger{background:var(--up);box-shadow:0 2px 6px rgba(192,85,75,.3);}
+
+/* ---------- 字体选择弹窗 ---------- */
+.font-list{
+  margin-top:14px;display:flex;flex-direction:column;gap:8px;
+}
+.font-option{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  border:1.5px solid var(--line);border-radius:10px;
+  background:#FBF8F0;text-align:left;
+  transition:.15s;
+}
+.font-option.on{
+  border-color:var(--accent);background:var(--accent-soft);
+}
+.font-option:active{background:#F4EFE3;}
+.font-option.on:active{background:var(--accent-soft);}
+.font-name{
+  font-size:12px;font-weight:600;color:var(--ink3);
+  flex:none;min-width:34px;font-family:var(--font-base);
+}
+.font-preview{
+  font-size:15px;color:var(--ink);
+  flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.font-check{
+  color:var(--accent);font-weight:700;flex:none;font-size:14px;
+}
+.font-status{
+  margin-top:12px;font-size:11px;color:var(--ink3);
+  text-align:center;min-height:16px;line-height:1.5;
+}
 
 /* 夸奖弹窗 */
 .praise{text-align:center;}
@@ -501,6 +548,162 @@ if('serviceWorker' in navigator){
       console.warn('[PWA] Service Worker 注册失败（file:// 打开时属正常）:', err);
     });
   });
+}
+
+/* ============================================================
+   0. 字体方案定义
+   ============================================================ */
+const FONT_PRESETS = {
+  default: {
+    name: '默认',
+    preview: '日迹 · 打卡',
+    base: '-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif',
+    serif: '"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,serif'
+  },
+  serif: {
+    name: '宋体',
+    preview: '日迹 · 打卡',
+    base: '"Noto Serif SC","Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif',
+    serif: '"Noto Serif SC","Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif',
+    needLoad: ['serif'],
+    waitFont: 'Noto Serif SC'
+  },
+  kai: {
+    name: '楷体',
+    preview: '日迹 · 打卡',
+    base: '"LXGW WenKai","Kaiti SC","KaiTi","Noto Serif SC","Songti SC",serif',
+    serif: '"LXGW WenKai","Kaiti SC","KaiTi","Noto Serif SC","Songti SC",serif',
+    needLoad: ['kai'],
+    waitFont: 'LXGW WenKai'
+  },
+  sans: {
+    name: '黑体',
+    preview: '日迹 · 打卡',
+    base: '-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif',
+    serif: '-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif'
+  }
+};
+
+const FONT_CDN = {
+  serif: [
+    'https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.0/400.css',
+    'https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.0.0/700.css'
+  ],
+  kai: [
+    'https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css'
+  ]
+};
+
+const loadedFonts = {};
+
+function loadFontCSS(key){
+  if(loadedFonts[key]) return loadedFonts[key];
+  const urls = FONT_CDN[key];
+  if(!urls) return Promise.resolve();
+  const arr = Array.isArray(urls) ? urls : [urls];
+  const promises = arr.map(url => new Promise(resolve => {
+    if(document.querySelector(`link[data-font-css="${url}"]`)){
+      resolve(); return;
+    }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    link.crossOrigin = 'anonymous';
+    link.dataset.fontCss = url;
+    link.onload = resolve;
+    link.onerror = resolve;
+    document.head.appendChild(link);
+  }));
+  loadedFonts[key] = Promise.all(promises);
+  return loadedFonts[key];
+}
+
+function applyFont(style){
+  const preset = FONT_PRESETS[style] || FONT_PRESETS.default;
+  const root = document.documentElement;
+  root.style.setProperty('--font-base', preset.base);
+  root.style.setProperty('--font-serif', preset.serif);
+}
+
+function updateFontPickerSelection(style){
+  const modal = document.getElementById('modalMask');
+  if(!modal) return;
+  modal.querySelectorAll('.font-option').forEach(btn => {
+    const isOn = btn.dataset.font === style;
+    btn.classList.toggle('on', isOn);
+    const oldCheck = btn.querySelector('.font-check');
+    if(isOn && !oldCheck){
+      const span = document.createElement('span');
+      span.className = 'font-check';
+      span.textContent = '✓';
+      btn.appendChild(span);
+    } else if(!isOn && oldCheck){
+      oldCheck.remove();
+    }
+  });
+}
+
+async function setFont(style){
+  if(!FONT_PRESETS[style]) style = 'default';
+  state.fontStyle = style;
+  save();
+
+  const preset = FONT_PRESETS[style];
+
+  const statusEl = document.querySelector('#modalMask .font-status');
+  if(statusEl){
+    statusEl.textContent = '正在切换…';
+    statusEl.style.color = 'var(--ink3)';
+  }
+
+  if(preset.needLoad && preset.needLoad.length){
+    await Promise.all(preset.needLoad.map(loadFontCSS));
+  }
+
+  applyFont(style);
+  updateFontPickerSelection(style);
+
+  if(statusEl){
+    if(preset.waitFont){
+      statusEl.textContent = '正在加载字体（首次需联网）…';
+      statusEl.style.color = 'var(--ink3)';
+
+      const timeout = new Promise(r => setTimeout(r, 10000));
+      const load = Promise.all([
+        document.fonts.load(`16px "${preset.waitFont}"`).catch(() => []),
+        document.fonts.load(`bold 16px "${preset.waitFont}"`).catch(() => [])
+      ]);
+      await Promise.race([load, timeout]);
+
+      statusEl.textContent = '✓ 字体已应用';
+      statusEl.style.color = 'var(--down)';
+    } else {
+      statusEl.textContent = '✓ 字体已应用';
+      statusEl.style.color = 'var(--down)';
+    }
+  }
+}
+
+function openFontPickerModal(){
+  const current = state.fontStyle || 'default';
+  const opts = Object.entries(FONT_PRESETS).map(([key, p]) => {
+    const on = key === current;
+    return `<button class="font-option ${on?'on':''}" data-font="${key}">
+      <span class="font-name">${p.name}</span>
+      <span class="font-preview" style="font-family:${p.serif}">${p.preview}</span>
+      ${on ? '<span class="font-check">✓</span>' : ''}
+    </button>`;
+  }).join('');
+
+  openModal(`
+    <div class="modal-title">字体风格</div>
+    <div class="modal-desc" style="margin-top:6px">首次切换 Web 字体需联网加载，加载后离线可用</div>
+    <div class="font-list">${opts}</div>
+    <div class="font-status"></div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn ghost" data-act="close-modal" style="flex:1">关闭</button>
+    </div>
+  `);
 }
 
 /* ============================================================
@@ -573,6 +776,7 @@ function defaultState(){
     celebrated: {},
     celebratedMods: {},
     timelineOrder: 'desc',
+    fontStyle: 'default',
   };
 }
 let state;
@@ -585,6 +789,7 @@ state.notes          = Array.isArray(state.notes) ? state.notes : [];
 state.celebrated     = (state.celebrated && typeof state.celebrated === 'object') ? state.celebrated : {};
 state.celebratedMods = (state.celebratedMods && typeof state.celebratedMods === 'object') ? state.celebratedMods : {};
 state.timelineOrder  = state.timelineOrder === 'asc' ? 'asc' : 'desc';
+state.fontStyle      = FONT_PRESETS[state.fontStyle] ? state.fontStyle : 'default';
 if(!Array.isArray(state.pageOrder) ||
    state.pageOrder.length !== PAGE_KEYS.length ||
    !PAGE_KEYS.every(k => state.pageOrder.includes(k))){
@@ -906,6 +1111,10 @@ function openPraiseModal(kind){
 
 modalRoot.addEventListener('click', e => {
   if(e.target.id === 'modalMask'){ closeModal(); return; }
+
+  const fontEl = e.target.closest('[data-font]');
+  if(fontEl){ setFont(fontEl.dataset.font); return; }
+
   const el = e.target.closest('[data-act]');
   if(!el) return;
   const act = el.dataset.act;
@@ -970,12 +1179,15 @@ function calendarHTML(){
   <div class="page">
     <header class="appbar">
       <div class="brand">日迹</div>
-      <button class="icon-btn" data-act="open-weight" aria-label="体重趋势">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 17l5-6 4 4 5-7 4 5"/>
-        </svg>
-      </button>
+      <div class="appbar-actions">
+        <button class="icon-btn font-btn" data-act="open-font" aria-label="字体设置">Aa</button>
+        <button class="icon-btn" data-act="open-weight" aria-label="体重趋势">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17l5-6 4 4 5-7 4 5"/>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <div class="cal-card">
@@ -1674,6 +1886,9 @@ app.addEventListener('click', e => {
       view.showAddMod = false;
       render(true);
 
+    } else if(act === 'open-font'){
+      openFontPickerModal();
+
     } else if(act === 'open-weight'){
       view.name = 'day';
       view.date = TODAY();
@@ -1807,7 +2022,10 @@ app.addEventListener('keydown', e => {
   }
 });
 
-/* 启动 */
+/* ============================================================
+   启动：先应用字体，再渲染
+   ============================================================ */
+applyFont(state.fontStyle);
 render(true);
 </script>
 </body>
