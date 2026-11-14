@@ -1,12 +1,8 @@
 /* ============================================================
    日迹 PWA Service Worker
-   缓存分层：
-   - shell：应用外壳，cache-first
-   - font ：Web 字体，stale-while-revalidate
-   - cdn  ：第三方脚本，stale-while-revalidate
    ============================================================ */
 
-const CACHE_VERSION = 'riji-v5';
+const CACHE_VERSION = 'riji-v7';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const FONT_CACHE  = `${CACHE_VERSION}-font`;
 const CDN_CACHE   = `${CACHE_VERSION}-cdn`;

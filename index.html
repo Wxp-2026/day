@@ -236,14 +236,9 @@ input,textarea{font-family:inherit;}
 }
 .btn:active{filter:brightness(.94);transform:scale(.97);}
 .btn.ghost{background:#F4EFE3;color:var(--ink2);box-shadow:none;border:1px solid var(--line);}
-.w-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #F2EDE2;}
-.w-t{font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums;}
-.w-v{font-size:16px;font-weight:600;font-family:var(--font-serif);}
-.w-v i{font-size:11px;font-weight:400;color:var(--ink3);font-style:normal;margin-left:2px;font-family:inherit;}
 .mini{font-size:11px;color:var(--ink2);background:#F5F0E4;border:1px solid var(--line);border-radius:8px;padding:5px 10px;flex:none;}
 .mini:active{background:#ECE5D5;}
 .mini.danger{color:var(--up);}
-.w-row .mini:first-of-type{margin-left:auto;}
 
 .stat-summary{display:flex;gap:8px;margin-bottom:14px;}
 .stat-box{flex:1;min-width:0;background:#FAF7EF;border-radius:9px;padding:11px 10px;border:1px solid #F0EBDF;}
@@ -257,6 +252,63 @@ input,textarea{font-family:inherit;}
 .chart{width:100%;height:auto;display:block;}
 .chart-empty{text-align:center;color:var(--ink3);font-size:13px;padding:36px 0;}
 .chart-empty span{font-size:11px;color:#C0B7A6;}
+
+.stat-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px;}
+.stat-nav-label{font-size:13px;font-weight:600;font-family:var(--font-serif);color:var(--ink);min-width:96px;text-align:center;}
+
+.ym-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ym-stat-card{
+  background:#FAF7EF;border:1px solid #F0EBDF;border-radius:10px;
+  padding:8px 8px 7px;display:flex;flex-direction:column;align-items:stretch;
+  text-align:left;transition:.15s;
+}
+.ym-stat-card:active{background:#F4EFE3;transform:scale(.97);}
+.ym-stat-card.empty{opacity:.55;}
+.ym-stat-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
+.ym-stat-name{font-size:12px;font-weight:600;font-family:var(--font-serif);color:var(--ink);}
+.ym-stat-count{font-size:9px;color:var(--ink3);}
+.ym-stat-spark{height:36px;margin-bottom:2px;display:flex;align-items:center;justify-content:center;}
+.ym-stat-info{font-size:9px;color:var(--ink3);text-align:center;line-height:1.3;font-variant-numeric:tabular-nums;}
+
+.bmi-body{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+.bmi-value{font-size:38px;font-weight:700;font-family:var(--font-serif);line-height:1;}
+.bmi-label{font-size:14px;font-weight:600;}
+
+.bmi-bar{
+  position:relative;display:flex;height:12px;border-radius:6px;
+  margin-bottom:20px;
+}
+.bmi-seg{height:100%;}
+.bmi-seg:first-child{border-radius:6px 0 0 6px;}
+.bmi-seg:nth-child(4){border-radius:0 6px 6px 0;}
+.bmi-marker{
+  position:absolute;top:-4px;
+  width:4px;height:20px;border-radius:2px;
+  background:#33302B;
+  transform:translateX(-50%);
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.bmi-scale{
+  position:relative;height:14px;
+  font-size:10px;color:var(--ink3);
+  margin-top:-14px;margin-bottom:10px;
+}
+.bmi-scale span{
+  position:absolute;transform:translateX(-50%);
+  top:0;
+}
+.bmi-hint{font-size:11px;color:var(--ink3);text-align:center;}
+
+.wh-list{margin-top:2px;}
+.wh-group{padding:10px 0;border-bottom:1px solid #F2EDE2;}
+.wh-group:last-child{border-bottom:none;padding-bottom:0;}
+.wh-date{font-size:12px;color:var(--ink3);font-weight:600;margin-bottom:4px;letter-spacing:.3px;}
+.wh-item{display:flex;align-items:center;gap:10px;padding:5px 0;}
+.wh-time{font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums;flex:none;width:40px;}
+.wh-value{font-size:15px;font-weight:600;font-family:var(--font-serif);flex:1;}
+.wh-value i{font-size:11px;font-weight:400;color:var(--ink3);font-style:normal;margin-left:2px;font-family:inherit;}
+.wh-item .mini{margin-left:0;}
+.wh-item .mini:first-of-type{margin-left:auto;}
 
 .mod{padding:11px 0;border-top:1px solid #F2EDE2;}
 .mod:first-of-type{border-top:none;padding-top:2px;}
@@ -404,7 +456,7 @@ if('serviceWorker' in navigator){
 }
 
 /* ============================================================
-   0. 字体方案：楷体（默认）/ 手写 / 黑体
+   0. 字体方案
    ============================================================ */
 const FONT_PRESETS = {
   kai: {
@@ -544,7 +596,7 @@ function openSettingsModal(){
 }
 
 /* ============================================================
-   1. 农历模块：多 CDN 加载 + 内置兜底（含节气）
+   1. 农历模块
    ============================================================ */
 const LUNAR_CDNS = [
   'https://unpkg.com/lunar-javascript@2.0.4/dist/lunar.min.js',
@@ -660,7 +712,7 @@ const LUNAR_DAY_CN = ['','初一','初二','初三','初四','初五','初六','
   '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
   '廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
 
-/* ---- 节气兜底：21 世纪通用公式 ---- */
+/* ---- 节气兜底 ---- */
 const JIE_QI_NAMES = [
   '小寒','大寒','立春','雨水','惊蛰','春分',
   '清明','谷雨','立夏','小满','芒种','夏至',
@@ -694,7 +746,6 @@ function getJieQiFallback(y, m, d){
   return jieQiYearCache.get(y).get(`${m}-${d}`) || '';
 }
 
-/* 只保留中国传统节日 */
 const LUNAR_FESTIVALS = {
   '1-1':'春节','1-15':'元宵','2-2':'龙抬头','5-5':'端午',
   '7-7':'七夕','7-15':'中元','8-15':'中秋','9-9':'重阳',
@@ -715,7 +766,6 @@ function getFallbackLunar(y, m, d){
     if(term){
       return { text: term, festival: '', term, isFestival: false, isTerm: true };
     }
-
     const monthStr = (r.isLeap ? '闰' : '') + LUNAR_MONTH_CN[r.month] + '月';
     const dayStr = r.day === 1 ? monthStr : LUNAR_DAY_CN[r.day];
     return { text: dayStr, festival: '', term: '', isFestival: false, isTerm: false };
@@ -724,7 +774,6 @@ function getFallbackLunar(y, m, d){
   }
 }
 
-/* ---- 主查询：只取农历传统节日 + 节气 ---- */
 const lunarCache = new Map();
 
 function getLunarInfo(y, m, d){
@@ -741,12 +790,10 @@ function getLunarInfo(y, m, d){
       const solar = Solar.fromYmd(y, m, d);
       const lunar = solar.getLunar();
 
-      /* 农历节日（传统节日） */
       let festivals = [];
       try { festivals = lunar.getFestivals() || []; } catch(_){}
       const festival = festivals.length ? festivals[0] : '';
 
-      /* 节气：多层尝试 */
       let term = '';
       try {
         if(typeof lunar.getJieQi === 'function'){
@@ -871,7 +918,8 @@ function defaultState(){
     pageOrder:['mood','weight','check'],
     celebrated:{}, celebratedMods:{}, timelineOrder:'desc',
     fontStyle:'kai',
-    showLunar:true
+    showLunar:true,
+    height:null
   };
 }
 let state;
@@ -886,6 +934,7 @@ state.celebratedMods = (state.celebratedMods && typeof state.celebratedMods === 
 state.timelineOrder  = state.timelineOrder === 'asc' ? 'asc' : 'desc';
 state.fontStyle      = FONT_PRESETS[state.fontStyle] ? state.fontStyle : 'kai';
 state.showLunar      = state.showLunar !== false;
+state.height         = state.height || null;
 if(!Array.isArray(state.pageOrder) || state.pageOrder.length !== PAGE_KEYS.length || !PAGE_KEYS.every(k => state.pageOrder.includes(k))){
   state.pageOrder = PAGE_KEYS.slice();
 }
@@ -1011,6 +1060,8 @@ let view = {
   year:_now.getFullYear(), month:_now.getMonth(),
   date:TODAY(), page:'mood', wDate:TODAY(),
   showAddMod:false, newIcon:'💧', statRange:'week',
+  statYear: _now.getFullYear(),
+  statMonth: _now.getMonth(),
 };
 
 /* ============================================================
@@ -1058,6 +1109,26 @@ function openWeightDeleteModal(id){
     </div>
   `);
 }
+function openHeightEditModal(){
+  const cur = state.height || '';
+  openModal(`
+    <div class="modal-title">设置身高</div>
+    <div class="modal-desc" style="margin-top:6px">用于计算 BMI 体重指数</div>
+    <div class="w-form" style="margin-top:18px">
+      <input class="w-input" id="heightInput" type="number" step="1" inputmode="numeric"
+             value="${cur}" placeholder="170">
+      <span class="w-unit">cm</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" data-act="close-modal">取消</button>
+      <button class="btn" data-act="confirm-height">保存</button>
+    </div>
+  `);
+  setTimeout(() => {
+    const el = document.getElementById('heightInput');
+    if(el){ el.focus(); el.select(); }
+  }, 250);
+}
 function openDeleteModuleModal(mid){
   const m = state.modules.find(x => x.id === mid);
   if(!m) return;
@@ -1102,6 +1173,14 @@ modalRoot.addEventListener('click', e => {
     return;
   }
 
+  if(act === 'confirm-height'){
+    const input = document.getElementById('heightInput');
+    const raw = parseFloat(input && input.value);
+    if(!isFinite(raw) || raw < 50 || raw > 250){ if(input){ input.focus(); input.select(); } return; }
+    state.height = Math.round(raw);
+    save(); closeModal(); render(); return;
+  }
+
   if(act === 'confirm-edit-weight'){
     const input = document.getElementById('editWInput');
     const raw = parseFloat(input && input.value);
@@ -1132,6 +1211,11 @@ modalRoot.addEventListener('keydown', e => {
   if(e.key === 'Enter' && e.target.id === 'editWInput'){
     e.preventDefault();
     const btn = modalRoot.querySelector('[data-act="confirm-edit-weight"]');
+    if(btn) btn.click();
+  }
+  if(e.key === 'Enter' && e.target.id === 'heightInput'){
+    e.preventDefault();
+    const btn = modalRoot.querySelector('[data-act="confirm-height"]');
     if(btn) btn.click();
   }
   if(e.key === 'Escape') closeModal();
@@ -1346,10 +1430,10 @@ function moodPageHTML(key){
   </section>`;
 }
 
+/* ---------- 体重页 ---------- */
 function weightPageHTML(key){
-  const weights = state.weights.filter(x => x.date === key).sort((a,b)=> a.time < b.time ? -1 : 1);
-  const u = unitLabel();
   const st = weightStats();
+  const u = unitLabel();
   const deltaBox = (label, v) => {
     if(v == null) return `<div class="stat-box"><div class="k">${label}</div><div class="v flat">--</div></div>`;
     const flat = Math.abs(v) < 0.05;
@@ -1357,84 +1441,293 @@ function weightPageHTML(key){
     const txt = (v > 0 ? '+' : '') + v.toFixed(1);
     return `<div class="stat-box"><div class="k">${label}</div><div class="v" style="${color}">${txt}<i>${u}</i></div></div>`;
   };
+
   return `
   <section class="card">
-    <div class="card-head"><h3>体重趋势</h3><div class="seg"><button class="${state.unit==='kg'?'on':''}" data-unit="kg">kg</button><button class="${state.unit==='jin'?'on':''}" data-unit="jin">斤</button></div></div>
+    <div class="card-head">
+      <h3>体重趋势</h3>
+      <div class="seg">
+        <button class="${state.unit==='kg'?'on':''}" data-unit="kg">kg</button>
+        <button class="${state.unit==='jin'?'on':''}" data-unit="jin">斤</button>
+      </div>
+    </div>
     <div class="stat-summary">
       <div class="stat-box"><div class="k">当前体重</div><div class="v">${st.cur != null ? st.cur.toFixed(1) : '--'}<i>${u}</i></div></div>
       ${deltaBox('较上次', st.last)}
       ${deltaBox('总体变化', st.total)}
     </div>
-    <div class="stat-tabs">
-      ${[['week','周'],['month','月'],['year','年']].map(([k,n]) => `<button data-range="${k}" class="${view.statRange===k?'on':''}">${n}</button>`).join('')}
-    </div>
-    <div id="wChartWrap">${buildChart(getSeries(view.statRange))}</div>
+    <div id="wTrendWrap">${renderTrendBody()}</div>
   </section>
+
+  ${bmiCard()}
+
   <section class="card">
     <div class="card-head"><h3>记录体重</h3></div>
-    <div class="w-form"><input class="w-input" id="wInput" type="number" step="0.1" inputmode="decimal" placeholder="0.0" value=""><span class="w-unit">${u}</span><button class="btn" data-act="save-weight">记录</button></div>
-    ${weights.length ? weights.map(w => `<div class="w-row"><span class="w-t">${w.time}</span><span class="w-v">${toDisplay(w.kg).toFixed(1)}<i>${u}</i></span><button class="mini" data-edit-weight="${w.id}">改</button><button class="mini danger" data-del-weight="${w.id}">删</button></div>`).join('') : `<div class="empty-line">当天还没有体重记录</div>`}
-  </section>`;
-}
-
-function checkPageHTML(key){
-  const activeMods = getActiveModules(key);
-  const total = activeMods.length;
-  let doneCount = 0;
-  const modRows = activeMods.map(m => {
-    const c = state.checks[key + '|' + m.id] || 0;
-    const done = c >= m.target;
-    if(done) doneCount++;
-    const slots = Math.min(Math.max(m.target, c), 12);
-    let icons = '';
-    for(let i = 0; i < slots; i++){
-      icons += `<button class="slot ${i < c ? 'on' : ''}" data-mod="${m.id}" data-idx="${i}">${m.icon}</button>`;
-    }
-    return `<div class="mod"><div class="mod-head"><span class="mod-name">${m.icon} ${m.name}${done ? '<span class="done-badge">✓</span>' : ''}</span><span class="mod-count">${c} / ${m.target}</span><button class="mod-del" data-del-mod="${m.id}">✕</button></div><div class="mod-slots">${icons}</div></div>`;
-  }).join('');
-  const allDone = total > 0 && doneCount === total;
-  const addForm = `
-    <div class="add-form">
-      <div class="emoji-row">${EMOJIS.map(e => `<button class="emo ${view.newIcon===e?'on':''}" data-emo="${e}">${e}</button>`).join('')}</div>
-      <input id="modName" placeholder="模块名称，如 喝水 / 阅读 / 早睡" autocomplete="off">
-      <div class="target-row"><span>每日目标</span><input id="modTarget" type="number" min="1" max="12" value="1"><span>次</span></div>
-      <div class="form-note">新模块从当前日期起生效，之后的日期会自动同步显示。</div>
-      <div class="form-actions"><button class="btn ghost" data-act="cancel-mod">取消</button><button class="btn" data-act="confirm-mod">添加</button></div>
-    </div>`;
-  return `
-  <section class="card">
-    <div class="card-head"><h3>日常打卡</h3>
-      <div class="head-right">
-        ${allDone ? `<span class="all-done">🎉 全部完成</span>` : (total ? `<span class="hint">${doneCount}/${total} 已完成</span>` : '')}
-        <button class="mini" data-act="add-mod">＋ 模块</button>
-      </div>
+    <div class="w-form">
+      <input class="w-input" id="wInput" type="number" step="0.1" inputmode="decimal" placeholder="0.0" value="">
+      <span class="w-unit">${u}</span>
+      <button class="btn" data-act="save-weight">记录</button>
     </div>
-    ${total ? modRows : `<div class="empty-line">当天没有打卡模块，点右上角添加</div>`}
-    ${view.showAddMod ? addForm : ''}
-  </section>`;
+    <div class="hint" style="text-align:center;margin-top:4px">记录到当前查看的日期：${key}</div>
+  </section>
+
+  ${weightHistoryCard()}
+  `;
 }
 
-function getSeries(range){
+/* ---------- 趋势图 ---------- */
+function renderTrendBody(){
+  const range = view.statRange;
+  let nav = '';
+  let body = '';
+
+  if(range === 'week'){
+    body = buildChart(getWeekSeries());
+  } else if(range === 'month'){
+    nav = `<div class="stat-nav">
+      <button class="nav-btn" data-statnav="-1">‹</button>
+      <span class="stat-nav-label">${view.statYear}年${view.statMonth+1}月</span>
+      <button class="nav-btn" data-statnav="1">›</button>
+    </div>`;
+    body = buildChart(getMonthSeries(view.statYear, view.statMonth));
+  } else {
+    nav = `<div class="stat-nav">
+      <button class="nav-btn" data-statnav="-1">‹</button>
+      <span class="stat-nav-label">${view.statYear}年</span>
+      <button class="nav-btn" data-statnav="1">›</button>
+    </div>`;
+    body = buildYearSparklines(view.statYear);
+  }
+
+  return `
+    <div class="stat-tabs">
+      <button data-range="week" class="${range==='week'?'on':''}">周</button>
+      <button data-range="month" class="${range==='month'?'on':''}">月</button>
+      <button data-range="year" class="${range==='year'?'on':''}">年</button>
+    </div>
+    ${nav}
+    ${body}
+  `;
+}
+
+function getWeekSeries(){
   const today = new Date();
   const out = [];
-  if(range === 'year'){
-    for(let i = 11; i >= 0; i--){
-      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const ym = `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
-      const vals = state.weights.filter(w => w.date.slice(0,7) === ym).map(w => w.kg);
-      out.push({ label:`${d.getMonth()+1}月`, value: vals.length ? avg(vals) : null });
-    }
-  } else {
-    const n = range === 'week' ? 7 : 30;
-    for(let i = n - 1; i >= 0; i--){
-      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-      const k = dkey(d);
-      const vals = state.weights.filter(w => w.date === k).map(w => w.kg);
-      out.push({ label:`${d.getMonth()+1}/${d.getDate()}`, value: vals.length ? avg(vals) : null });
-    }
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const k = dkey(d);
+    const vals = state.weights.filter(w => w.date === k).map(w => w.kg);
+    out.push({ label:`${d.getMonth()+1}/${d.getDate()}`, value: vals.length ? avg(vals) : null });
   }
   return out;
 }
+
+function getMonthDaily(year, month){
+  const days = new Date(year, month+1, 0).getDate();
+  const out = [];
+  for(let d = 1; d <= days; d++){
+    const k = `${year}-${pad(month+1)}-${pad(d)}`;
+    const vals = state.weights.filter(w => w.date === k).map(w => w.kg);
+    out.push({ day: d, value: vals.length ? avg(vals) : null });
+  }
+  return out;
+}
+
+function getMonthSeries(year, month){
+  return getMonthDaily(year, month).map(x => ({
+    label: `${month+1}/${x.day}`,
+    value: x.value
+  }));
+}
+
+function buildYearSparklines(year){
+  let html = '';
+  for(let m = 0; m < 12; m++){
+    const data = getMonthDaily(year, m);
+    const vals = data.filter(x => x.value != null).map(x => x.value);
+    const count = vals.length;
+    const avgVal = count ? avg(vals) : null;
+    const minVal = count ? Math.min(...vals) : null;
+    const maxVal = count ? Math.max(...vals) : null;
+    const spark = buildSparkline(data);
+
+    html += `<button class="ym-stat-card ${count?'':'empty'}" data-stat-month="${m}">
+      <div class="ym-stat-head">
+        <span class="ym-stat-name">${m+1}月</span>
+        <span class="ym-stat-count">${count}天</span>
+      </div>
+      <div class="ym-stat-spark">${spark}</div>
+      <div class="ym-stat-info">${
+        count
+          ? `均 ${toDisplay(avgVal).toFixed(1)} · ${toDisplay(minVal).toFixed(1)}~${toDisplay(maxVal).toFixed(1)}`
+          : '无记录'
+      }</div>
+    </button>`;
+  }
+  return `<div class="ym-stat-grid">${html}</div>`;
+}
+
+function buildSparkline(data){
+  const pts = data.filter(x => x.value != null);
+  const W = 90, H = 36, pl = 4, pr = 4, pt = 4, pb = 4;
+  if(!pts.length) return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"></svg>`;
+
+  const days = data.length;
+  const vals = pts.map(p => toDisplay(p.value));
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = Math.max(max - min, 1);
+  const iw = W - pl - pr, ih = H - pt - pb;
+
+  const px = d => pl + ((d - 1) / Math.max(days - 1, 1)) * iw;
+  const py = v => pt + ih * (1 - (v - min) / range);
+
+  if(pts.length === 1){
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+      <circle cx="${px(pts[0].day).toFixed(1)}" cy="${py(toDisplay(pts[0].value)).toFixed(1)}"
+              r="2.6" fill="#C96B4A"/>
+    </svg>`;
+  }
+
+  const co = pts.map(p => [px(p.day), py(toDisplay(p.value))]);
+  const path = co.map((c, i) => (i?'L':'M') + c[0].toFixed(1) + ' ' + c[1].toFixed(1)).join(' ');
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`;
+  s += `<path d="${path}" fill="none" stroke="#C96B4A" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"/>`;
+  co.forEach((c, i) => {
+    if(i === 0 || i === co.length - 1){
+      s += `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2"
+            fill="#FFFDFA" stroke="#C96B4A" stroke-width="1.4"/>`;
+    }
+  });
+  return s + `</svg>`;
+}
+
+/* ---------- BMI ---------- */
+function calcBMI(kg, cm){
+  const m = cm / 100;
+  return kg / (m*m);
+}
+function bmiCategory(bmi){
+  if(bmi < 18.5) return { label:'偏瘦', color:'#5B8DEF' };
+  if(bmi < 24) return { label:'正常', color:'#4C8B7A' };
+  if(bmi < 28) return { label:'超重', color:'#D99A2B' };
+  return { label:'肥胖', color:'#C0554B' };
+}
+function bmiCard(){
+  const sorted = [...state.weights].sort((a,b) => {
+    const ka = a.date + ' ' + a.time, kb = b.date + ' ' + b.time;
+    return ka > kb ? 1 : -1;
+  });
+  const latest = sorted.length ? sorted[sorted.length - 1] : null;
+  const u = unitLabel();
+
+  if(!state.height){
+    return `
+    <section class="card">
+      <div class="card-head"><h3>BMI 体重指数</h3></div>
+      <div class="empty-line" style="padding:16px 0 8px">设置身高后自动计算 BMI</div>
+      <button class="btn" data-act="edit-height" style="width:100%">设置身高</button>
+    </section>`;
+  }
+
+  if(!latest){
+    return `
+    <section class="card">
+      <div class="card-head">
+        <h3>BMI 体重指数</h3>
+        <button class="mini" data-act="edit-height">身高 ${state.height}cm</button>
+      </div>
+      <div class="empty-line">记录一次体重后自动计算</div>
+    </section>`;
+  }
+
+  const bmi = calcBMI(latest.kg, state.height);
+  const cat = bmiCategory(bmi);
+  const pos = Math.max(0, Math.min(100, ((bmi - 14) / 20) * 100));
+
+  const p185 = ((18.5 - 14) / 20) * 100;
+  const p24  = ((24 - 14) / 20) * 100;
+  const p28  = ((28 - 14) / 20) * 100;
+
+  return `
+  <section class="card">
+    <div class="card-head">
+      <h3>BMI 体重指数</h3>
+      <button class="mini" data-act="edit-height">身高 ${state.height}cm</button>
+    </div>
+    <div class="bmi-body">
+      <div class="bmi-value" style="color:${cat.color}">${bmi.toFixed(1)}</div>
+      <div class="bmi-label" style="color:${cat.color}">${cat.label}</div>
+    </div>
+    <div class="bmi-bar">
+      <div class="bmi-seg" style="flex:${p185};background:#5B8DEF"></div>
+      <div class="bmi-seg" style="flex:${p24 - p185};background:#4C8B7A"></div>
+      <div class="bmi-seg" style="flex:${p28 - p24};background:#D99A2B"></div>
+      <div class="bmi-seg" style="flex:${100 - p28};background:#C0554B"></div>
+      <div class="bmi-marker" style="left:${pos.toFixed(1)}%"></div>
+    </div>
+    <div class="bmi-scale">
+      <span style="left:${p185}%">18.5</span>
+      <span style="left:${p24}%">24</span>
+      <span style="left:${p28}%">28</span>
+    </div>
+    <div class="bmi-hint">基于最新记录 ${toDisplay(latest.kg).toFixed(1)}${u} · ${latest.date}</div>
+  </section>`;
+}
+
+/* ---------- 历史记录 ---------- */
+function weightHistoryCard(){
+  const u = unitLabel();
+  const all = [...state.weights].sort((a,b) => {
+    const ka = a.date + ' ' + a.time, kb = b.date + ' ' + b.time;
+    return ka < kb ? 1 : ka > kb ? -1 : 0;
+  });
+
+  if(!all.length){
+    return `
+    <section class="card">
+      <div class="card-head"><h3>历史记录</h3></div>
+      <div class="empty-line">还没有体重记录</div>
+    </section>`;
+  }
+
+  const groups = {};
+  all.forEach(w => {
+    if(!groups[w.date]) groups[w.date] = [];
+    groups[w.date].push(w);
+  });
+  const dates = Object.keys(groups).sort((a, b) => a < b ? 1 : -1);
+
+  const html = dates.map(dk => {
+    const d = new Date(dk + 'T00:00:00');
+    const week = ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+    const items = groups[dk].map(w => `
+      <div class="wh-item">
+        <span class="wh-time">${w.time}</span>
+        <span class="wh-value">${toDisplay(w.kg).toFixed(1)}<i>${u}</i></span>
+        <button class="mini" data-edit-weight="${w.id}">改</button>
+        <button class="mini danger" data-del-weight="${w.id}">删</button>
+      </div>
+    `).join('');
+    return `<div class="wh-group">
+      <div class="wh-date">${d.getMonth()+1}月${d.getDate()}日 · ${week}</div>
+      ${items}
+    </div>`;
+  }).join('');
+
+  return `
+  <section class="card">
+    <div class="card-head">
+      <h3>历史记录</h3>
+      <span class="hint">共 ${all.length} 条</span>
+    </div>
+    <div class="wh-list">${html}</div>
+  </section>`;
+}
+
+/* ---------- 通用折线图 ---------- */
 function buildChart(series){
   const pts = series.filter(p => p.value != null).map(p => ({ label: p.label, value: toDisplay(p.value) }));
   if(!pts.length) return `<div class="chart-empty">暂无数据<br><span>记录一条体重后即可查看趋势</span></div>`;
@@ -1458,7 +1751,7 @@ function buildChart(series){
   s += `<path d="M${co[0][0].toFixed(1)} ${pt+ih} ` + co.map(c => `L${c[0].toFixed(1)} ${c[1].toFixed(1)}`).join(' ') + ` L${co[co.length-1][0].toFixed(1)} ${pt+ih} Z" fill="url(#ga)"/>`;
   s += `<path d="${co.map((c,i)=>(i?'L':'M')+c[0].toFixed(1)+' '+c[1].toFixed(1)).join(' ')}" fill="none" stroke="#C96B4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
   co.forEach(c => { s += `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="3.6" fill="#FFFDFA" stroke="#C96B4A" stroke-width="2.2"/>`; });
-  const step = Math.ceil(pts.length / 5);
+  const step = Math.ceil(pts.length / 6);
   pts.forEach((p, i) => {
     if(i % step === 0 || i === pts.length - 1){
       s += `<text x="${px(i).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#B0A797">${p.label}</text>`;
@@ -1480,9 +1773,8 @@ function switchPage(page){
   window.scrollTo(0, 0);
 }
 function refreshWeightChart(){
-  const wrap = document.getElementById('wChartWrap');
-  if(wrap) wrap.innerHTML = buildChart(getSeries(view.statRange));
-  document.querySelectorAll('.stat-tabs [data-range]').forEach(b => b.classList.toggle('on', b.dataset.range === view.statRange));
+  const wrap = document.getElementById('wTrendWrap');
+  if(wrap) wrap.innerHTML = renderTrendBody();
 }
 
 /* ============================================================
@@ -1639,16 +1931,44 @@ app.addEventListener('click', e => {
   const cell = t.closest('[data-date]'); if(cell){ openDay(cell.dataset.date); return; }
   const dayNav = t.closest('[data-daynav]'); if(dayNav){ shiftDay(+dayNav.dataset.daynav); return; }
   const nav = t.closest('[data-nav]'); if(nav){ shiftMonth(+nav.dataset.nav); return; }
+
+  const statNav = t.closest('[data-statnav]');
+  if(statNav){
+    const n = +statNav.dataset.statnav;
+    if(view.statRange === 'year'){ view.statYear += n; }
+    else if(view.statRange === 'month'){
+      const d = new Date(view.statYear, view.statMonth + n, 1);
+      view.statYear = d.getFullYear();
+      view.statMonth = d.getMonth();
+    }
+    refreshWeightChart();
+    return;
+  }
+  const ymCard = t.closest('[data-stat-month]');
+  if(ymCard){
+    view.statMonth = +ymCard.dataset.statMonth;
+    view.statRange = 'month';
+    refreshWeightChart();
+    return;
+  }
+
   const actEl = t.closest('[data-act]');
   if(actEl){
     const act = actEl.dataset.act;
     if(act === 'today'){ const n = new Date(); view.year = n.getFullYear(); if(view.calMode === 'month') view.month = n.getMonth(); render(); }
     else if(act === 'goto-today'){ view.date = TODAY(); view.wDate = TODAY(); view.showAddMod = false; render(true); }
     else if(act === 'open-settings'){ openSettingsModal(); }
-    else if(act === 'open-weight'){ view.name = 'day'; view.date = TODAY(); view.wDate = TODAY(); view.page = 'weight'; view.showAddMod = false; render(true); }
+    else if(act === 'open-weight'){
+      view.name = 'day'; view.date = TODAY(); view.wDate = TODAY(); view.page = 'weight'; view.showAddMod = false;
+      const n = new Date();
+      view.statYear = n.getFullYear();
+      view.statMonth = n.getMonth();
+      render(true);
+    }
     else if(act === 'save-weight'){ saveWeight(); }
     else if(act === 'save-note'){ saveNote(); }
     else if(act === 'toggle-order'){ state.timelineOrder = state.timelineOrder === 'asc' ? 'desc' : 'asc'; save(); render(); }
+    else if(act === 'edit-height'){ openHeightEditModal(); }
     else if(act === 'add-mod'){ view.showAddMod = true; render(); }
     else if(act === 'cancel-mod'){ view.showAddMod = false; render(); }
     else if(act === 'confirm-mod'){
