@@ -137,14 +137,6 @@ input,textarea{font-family:inherit;}
 .cell.today .wdot{background:var(--accent);}
 .grid.no-lunar .cell{aspect-ratio:1/1;padding-top:0;justify-content:center;gap:2px;}
 
-.legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding-top:12px;font-size:11px;color:var(--ink3);}
-.legend span{display:flex;align-items:center;}
-.legend .lg{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:#ccc;}
-.legend .lg.fest{background:var(--festival);border-radius:50%;}
-.legend .lg.term{background:var(--term);border-radius:50%;}
-.legend .lg.mood{background:#D99A2B;border-radius:50%;}
-.legend .lg.bar{background:var(--accent);}
-.legend .lg.wdot{background:var(--down);border-radius:50%;}
 .tip{text-align:center;font-size:12px;color:var(--ink3);padding:18px 0 0;}
 
 .year-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:2px;}
@@ -182,7 +174,6 @@ input,textarea{font-family:inherit;}
   border-radius:9px;box-shadow:0 10px 26px rgba(0,0,0,.16);z-index:30;position:relative;transition:none;top:0;
 }
 .dtab-emoji{font-size:14px;line-height:1;}
-.drag-hint{text-align:center;font-size:11px;color:#B5AC9B;padding:9px 0 2px;}
 
 .card{background:#FFFDFA;border-radius:4px;border:1px solid var(--line);padding:16px;margin-top:12px;box-shadow:0 1px 1px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05);}
 .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;}
@@ -643,7 +634,6 @@ async function loadLunarLibrary(){
   return lunarLoading;
 }
 
-/* ---- 内置兜底农历 ---- */
 const LUNAR_INFO = [
   0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
   0x04ae0,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,
@@ -712,7 +702,6 @@ const LUNAR_DAY_CN = ['','初一','初二','初三','初四','初五','初六','
   '十一','十二','十三','十四','十五','十六','十七','十八','十九','二十',
   '廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
 
-/* ---- 节气兜底 ---- */
 const JIE_QI_NAMES = [
   '小寒','大寒','立春','雨水','惊蛰','春分',
   '清明','谷雨','立夏','小满','芒种','夏至',
@@ -1234,7 +1223,6 @@ function render(reset){
 }
 
 function calendarHTML(){
-  const showLunar = state.showLunar !== false;
   return `
   <div class="page">
     <header class="appbar">
@@ -1254,15 +1242,6 @@ function calendarHTML(){
     <div class="cal-card">
       ${calHeadHTML()}
       ${view.calMode === 'year' ? yearGridHTML() : monthGridHTML()}
-      <div class="legend">
-        ${showLunar ? `
-          <span><i class="lg fest"></i>传统节日</span>
-          <span><i class="lg term"></i>节气</span>
-        ` : ''}
-        <span><i class="lg mood"></i>心情</span>
-        <span><i class="lg bar"></i>完成度</span>
-        <span><i class="lg wdot"></i>体重</span>
-      </div>
     </div>
     <div class="tip">${view.calMode === 'year' ? '点击月份标题切换到月视图，点击日期查看当天详情' : '点击任意日期，记录当天的心情、体重与日常'}</div>
   </div>`;
@@ -1394,16 +1373,17 @@ function dayHTML(){
       <button class="icon-btn today-btn" data-act="goto-today" aria-label="回到今天" style="${isToday ? 'opacity:.4;pointer-events:none' : ''}">今</button>
     </header>
     <div class="dtab-bar" id="dtabBar">${tabs}</div>
-    <div class="drag-hint">左右拖动标签，可调整页面顺序</div>
     <div id="dtabBody">${pageBodyHTML(view.page)}</div>
   </div>`;
 }
+
 function pageBodyHTML(page){
   if(page === 'weight') return weightPageHTML(view.date);
   if(page === 'check')  return checkPageHTML(view.date);
   return moodPageHTML(view.date);
 }
 
+/* ---------- 心情页 ---------- */
 function moodPageHTML(key){
   const items = buildTimeline(key);
   const total = items.length;
@@ -1430,8 +1410,31 @@ function moodPageHTML(key){
   </section>`;
 }
 
-/* ---------- 体重页 ---------- */
+/* ---------- 体重页（顺序：记录体重 → 体重趋势 → BMI → 历史记录） ---------- */
 function weightPageHTML(key){
+  const u = unitLabel();
+
+  return `
+  <section class="card">
+    <div class="card-head"><h3>记录体重</h3></div>
+    <div class="w-form">
+      <input class="w-input" id="wInput" type="number" step="0.1" inputmode="decimal" placeholder="0.0" value="">
+      <span class="w-unit">${u}</span>
+      <button class="btn" data-act="save-weight">记录</button>
+    </div>
+    <div class="hint" style="text-align:center;margin-top:4px">记录到当前查看的日期：${key}</div>
+  </section>
+
+  ${weightTrendCard()}
+
+  ${bmiCard()}
+
+  ${weightHistoryCard()}
+  `;
+}
+
+/* ---------- 体重趋势卡 ---------- */
+function weightTrendCard(){
   const st = weightStats();
   const u = unitLabel();
   const deltaBox = (label, v) => {
@@ -1441,7 +1444,6 @@ function weightPageHTML(key){
     const txt = (v > 0 ? '+' : '') + v.toFixed(1);
     return `<div class="stat-box"><div class="k">${label}</div><div class="v" style="${color}">${txt}<i>${u}</i></div></div>`;
   };
-
   return `
   <section class="card">
     <div class="card-head">
@@ -1457,22 +1459,57 @@ function weightPageHTML(key){
       ${deltaBox('总体变化', st.total)}
     </div>
     <div id="wTrendWrap">${renderTrendBody()}</div>
-  </section>
+  </section>`;
+}
 
-  ${bmiCard()}
+/* ---------- 打卡页 ---------- */
+function checkPageHTML(key){
+  const activeMods = getActiveModules(key);
+  const total = activeMods.length;
+  let doneCount = 0;
 
+  const modRows = activeMods.map(m => {
+    const c = state.checks[key + '|' + m.id] || 0;
+    const done = c >= m.target;
+    if(done) doneCount++;
+    const slots = Math.min(Math.max(m.target, c), 12);
+    let icons = '';
+    for(let i = 0; i < slots; i++){
+      icons += `<button class="slot ${i < c ? 'on' : ''}" data-mod="${m.id}" data-idx="${i}">${m.icon}</button>`;
+    }
+    return `<div class="mod">
+      <div class="mod-head">
+        <span class="mod-name">${m.icon} ${m.name}${done ? '<span class="done-badge">✓</span>' : ''}</span>
+        <span class="mod-count">${c} / ${m.target}</span>
+        <button class="mod-del" data-del-mod="${m.id}">✕</button>
+      </div>
+      <div class="mod-slots">${icons}</div>
+    </div>`;
+  }).join('');
+
+  const allDone = total > 0 && doneCount === total;
+
+  const addForm = `
+    <div class="add-form">
+      <div class="emoji-row">${EMOJIS.map(e => `<button class="emo ${view.newIcon===e?'on':''}" data-emo="${e}">${e}</button>`).join('')}</div>
+      <input id="modName" placeholder="模块名称，如 喝水 / 阅读 / 早睡" autocomplete="off">
+      <div class="target-row"><span>每日目标</span><input id="modTarget" type="number" min="1" max="12" value="1"><span>次</span></div>
+      <div class="form-note">新模块从当前日期起生效，之后的日期会自动同步显示。</div>
+      <div class="form-actions"><button class="btn ghost" data-act="cancel-mod">取消</button><button class="btn" data-act="confirm-mod">添加</button></div>
+    </div>`;
+
+  return `
   <section class="card">
-    <div class="card-head"><h3>记录体重</h3></div>
-    <div class="w-form">
-      <input class="w-input" id="wInput" type="number" step="0.1" inputmode="decimal" placeholder="0.0" value="">
-      <span class="w-unit">${u}</span>
-      <button class="btn" data-act="save-weight">记录</button>
+    <div class="card-head">
+      <h3>日常打卡</h3>
+      <div class="head-right">
+        ${allDone ? `<span class="all-done">🎉 全部完成</span>` : (total ? `<span class="hint">${doneCount}/${total} 已完成</span>` : '')}
+        <button class="mini" data-act="add-mod">＋ 模块</button>
+      </div>
     </div>
-    <div class="hint" style="text-align:center;margin-top:4px">记录到当前查看的日期：${key}</div>
-  </section>
-
-  ${weightHistoryCard()}
-  `;
+    ${total ? modRows : `<div class="empty-line">当天没有打卡模块，点右上角添加</div>`}
+    ${view.showAddMod ? addForm : ''}
+  </section>`;
 }
 
 /* ---------- 趋势图 ---------- */

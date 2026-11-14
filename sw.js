@@ -2,7 +2,7 @@
    日迹 PWA Service Worker
    ============================================================ */
 
-const CACHE_VERSION = 'riji-v7';
+const CACHE_VERSION = 'riji-v10';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const FONT_CACHE  = `${CACHE_VERSION}-font`;
 const CDN_CACHE   = `${CACHE_VERSION}-cdn`;
@@ -33,14 +33,11 @@ const FONT_CSS = [
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const shell = await caches.open(SHELL_CACHE);
-
     await Promise.all(SHELL_ASSETS.map(async url => {
       try { await shell.add(new Request(url, { cache: 'reload' })); }
       catch (e) { console.warn('[SW] 外壳预缓存失败:', url, e); }
     }));
-
     await cacheFirstAvailable(LUNAR_CDNS, CDN_CACHE, '[SW] 农历库预缓存');
-
     await Promise.all(FONT_CSS.map(async url => {
       try {
         const res = await fetch(url, { mode: 'cors' });
@@ -50,7 +47,6 @@ self.addEventListener('install', event => {
         }
       } catch (e) { console.warn('[SW] 字体 CSS 预缓存失败:', url); }
     }));
-
     await self.skipWaiting();
   })());
 });
